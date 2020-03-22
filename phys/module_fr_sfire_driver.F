@@ -79,9 +79,9 @@ use module_fr_sfire_util
 ! Driver layer modules
 #ifdef DM_PARALLEL
     USE module_dm        , ONLY : ntasks_x,ntasks_y,local_communicator,mytask,ntasks,wrf_dm_sum_reals
-    USE module_comm_dm , ONLY : halo_fire_fuel_sub, halo_fire_tign_sub, halo_fire_wind_f_sub, &
+    USE module_comm_dm , ONLY : halo_fire_fuel1_sub, halo_fire_tign_sub, halo_fire_wind_f_sub, &
 halo_fire_wind_a_sub, halo_fire_ph_sub, halo_fire_zsf_sub, halo_fire_longlat_sub, &
-halo_fire_phb_sub, halo_fire_z0_sub, halo_fire_lfn_sub, HALO_FIRE_LFN_OUT_sub, &
+halo_fire_phb_sub, halo_fire_z0_sub, halo_fire_lfn1_sub, HALO_FIRE_LFN_OUT_sub, &
 HALO_FIRE_MAG_sub, HALO_FIRE_MFG_sub, halo_fire_ndwi_sub
 #endif
 use module_fr_sfire_atm, only: read_emissions_table, add_fire_emissions
@@ -162,7 +162,7 @@ subroutine sfire_driver_em ( grid , config_flags                    &
 
     call sfire_debug_hook(config_flags%fire_debug_hook_sec)
     call time_start
-    if(fire_ifun_start.le.1)call print_id  ! print id only once, during initialization
+!   if(fire_ifun_start.le.1)call print_id  ! print id only once, during initialization
 
 
 ! **** THE FOLLOWING REALLY SHOULD BE DONE ONCE NOT EVERY TIMESTEP
@@ -382,7 +382,7 @@ subroutine sfire_driver_em ( grid , config_flags                    &
 
             if(replay)then
                 call message('replay, halo exchange on lfn and tign')
-#include "HALO_FIRE_LFN.inc"
+#include "HALO_FIRE_LFN1.inc"
 #include "HALO_FIRE_TIGN.inc"
             endif
 
@@ -407,7 +407,7 @@ subroutine sfire_driver_em ( grid , config_flags                    &
 !           computing fuel_left needs ignition time from neighbors
             call message('halo exchange on lfn width 2 and tign')
 #include "HALO_FIRE_TIGN.inc"
-#include "HALO_FIRE_LFN.inc"
+#include "HALO_FIRE_LFN1.inc"
 
         endif
        endif
@@ -488,10 +488,10 @@ subroutine sfire_driver_em ( grid , config_flags                    &
           if(fire_run)then
               if(fire_ifun.eq.2)then
 !                 halo exchange on all fuel data width 2
-#include "HALO_FIRE_FUEL.inc"
+#include "HALO_FIRE_FUEL1.inc"
 !                 fire state was initialized
                   call message('halo exchange on lfn width 2')
-#include "HALO_FIRE_LFN.inc"
+#include "HALO_FIRE_LFN1.inc"
               endif
               if(run_fuel_moisture)then
                   if(fire_ifun.eq.3)then
@@ -1662,11 +1662,11 @@ subroutine set_fp_from_grid(grid,fp)
 end subroutine set_fp_from_grid
 
             
-subroutine print_id
-character(len=128)::id,msg
-#include "sfire_id.inc"
-msg=id
-call message(msg,level=1)
-end subroutine print_id
+!subroutine print_id
+!character(len=128)::id,msg
+!include "sfire_id.inc"
+!msg=id
+!call message(msg,level=1)
+!end subroutine print_id
 
 end module module_fr_sfire_driver
