@@ -1136,12 +1136,13 @@ do ij=1,num_tiles
 !$OMP end CRITICAL(SFIRE_DRIVER_CRIT)
 	  call message(msg)
           s = 1./(ir*jr)
+          print *,'mesh scaling factor ',s
           do j=jts,jte
             do i=its,ite
                 ! scale ground fluxes to get the averages
                 avg_fuel_frac(i,j)=avg_fuel_frac(i,j)*s
                 grnhfx(i,j)=fire_atm_feedback*grnhfx(i,j)*s
-                grnqfx(i,j)=fire_atm_feedback*grnqfx(i,j)*s
+                if(grnhfx(i,j)>0.0)print *,'GRNHFX ',i,j,grnhfx(i,j)
                 ! we do not have canopy fluxes yet...
                 canhfx(i,j)=0
                 canqfx(i,j)=0

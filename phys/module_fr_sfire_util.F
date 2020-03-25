@@ -551,9 +551,15 @@ do j=jts,jte
            do ioff=0,ir-1
                i_f=ioff+ibase
                t=t+v2(i_f,j_f)
+               if(i.eq.17.and.j.eq.9)then
+                   write(*,*)'ADD',i_f,j_f,v2(i_f,j_f),t
+               endif
            enddo
        enddo
        v1(i,j)=t
+               if(i.eq.17.and.j.eq.9)then
+                   write(*,*)'ADD result',i,j,v1(i,j)
+               endif
     enddo
 enddo
 
